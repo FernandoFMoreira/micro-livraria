@@ -1,6 +1,7 @@
 const express = require('express');
 const shipping = require('./shipping');
 const inventory = require('./inventory');
+const reviews = require('./review');
 const cors = require('cors');
 
 const app = express();
@@ -58,6 +59,21 @@ app.get('/product/:id', (req, res, next) => {
             res.json(product);
         }
     });
+});
+
+app.get('/reviews/:id', (req, res, next) => {
+  reviews.GetReviews({ id: req.params.id }, (err, data) => {
+    if (err) return res.status(500).send({ error: 'Falha ao recuperar avaliações' });
+    res.json(data);
+  });
+});
+
+app.post('/reviews', (req, res, next) => {
+  const { productId, username, rating, comment } = req.body;
+  reviews.AddReview({ productId, username, rating, comment }, (err, response) => {
+    if (err) return res.status(500).send({ error: 'Falha ao adicionar avaliação' });
+    res.json(response);
+  });
 });
 
 /**
